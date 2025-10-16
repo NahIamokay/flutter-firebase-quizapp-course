@@ -61,19 +61,37 @@ workflows:
     scripts:
       - name: Upgrade all dependencies to latest
         script: |
-          echo "📦 Upgrading all dependencies to latest compatible versions..."
+          echo "📦 Upgrading all dependencies to latest..."
           flutter pub upgrade --major-versions
-          echo "✅ All dependencies upgraded automatically!"
+          echo "✅ Dependencies upgraded!"
       
-      - name: Update Podfile iOS version
+      - name: Set iOS 15.0 deployment target in ALL locations
         script: |
-          sed -i '' "s/^platform :ios, *'[0-9.]*'/platform :ios, '13.0'/" ios/Podfile
+          echo "📱 Setting iOS 15.0 everywhere..."
+          
+          # Podfile
+          sed -i '' "s/^platform :ios, *'[0-9.]*'/platform :ios, '15.0'/" ios/Podfile
+          
+          # Xcode project
+          sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]*/IPHONEOS_DEPLOYMENT_TARGET = 15.0/g' ios/Runner.xcodeproj/project.pbxproj
+          
+          # Flutter generated config
+          if [ -f "ios/Flutter/Generated.xcconfig" ]; then
+            sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET=[0-9.]*/IPHONEOS_DEPLOYMENT_TARGET=15.0/g' ios/Flutter/Generated.xcconfig
+          fi
+          
+          # AppFrameworkInfo
+          if [ -f "ios/Flutter/AppFrameworkInfo.plist" ]; then
+            /usr/libexec/PlistBuddy -c "Set :MinimumOSVersion 15.0" ios/Flutter/AppFrameworkInfo.plist 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string 15.0" ios/Flutter/AppFrameworkInfo.plist 2>/dev/null || true
+          fi
+          
+          echo "✅ iOS 15.0 set everywhere!"
       
       - name: Clean and install pods
         script: |
           cd ios
-          rm -rf Podfile.lock Pods ~/Library/Caches/CocoaPods
-          pod repo update
+          rm -rf Podfile.lock Pods
           pod install
           cd ..
       
