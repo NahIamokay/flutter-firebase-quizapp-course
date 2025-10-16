@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>758773997881-sk4tfalbk1oqh5f2vv4gbcjqdlm7lq5f.apps.googleusercontent.com</string>
+	<string>420040817942-nomi8mf10at808rk3f419lq3q4k9561g.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.758773997881-sk4tfalbk1oqh5f2vv4gbcjqdlm7lq5f</string>
+	<string>com.googleusercontent.apps.420040817942-nomi8mf10at808rk3f419lq3q4k9561g</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>758773997881-b4g2gerk1isv5ehq4h9s63hgnn433rjc.apps.googleusercontent.com</string>
+	<string>420040817942-6pukr41viflv0af6alp6jeoldv04k3ov.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCHpFJY54w_YiXjCOfbVbsefn91FFUJ9PE</string>
+	<string>AIzaSyDiUIDuUzqzkla4NU2uhmrLUDTk9CZ4cc0</string>
 	<key>GCM_SENDER_ID</key>
-	<string>758773997881</string>
+	<string>420040817942</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>io.fireship.quizapp</string>
+	<string>io.fireships.quizapp</string>
 	<key>PROJECT_ID</key>
-	<string>fireship-lessons</string>
+	<string>websonix-news</string>
 	<key>STORAGE_BUCKET</key>
-	<string>fireship-lessons.appspot.com</string>
+	<string>websonix-news.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:758773997881:ios:82656735bc074188d1c8e8</string>
-	<key>DATABASE_URL</key>
-	<string>https://fireship-lessons.firebaseio.com</string>
+	<string>1:420040817942:ios:be9aecbcb6629838c12437</string>
 </dict>
 </plist>
