@@ -9,7 +9,7 @@ workflows:
         XCODE_VERSION: "15.0"
         FLUTTER_VERSION: "3.24.0"
         COCOAPODS_DISABLE_STATS: "true"
-        BUNDLE_ID: "io.fireships.quizapps"
+        BUNDLE_ID: "io.fireships.quizapp"
         APP_STORE_CONNECT_ISSUER_ID: "602ac213-1394-40fa-98e5-d13171c72476"
         APP_STORE_CONNECT_KEY_IDENTIFIER: "M6C3Y7VG76"
         APP_STORE_CONNECT_PRIVATE_KEY: |
