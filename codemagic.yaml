@@ -78,6 +78,26 @@ workflows:
         script: |
           find . -name "Podfile" -execdir pod install \;
       
+      - name: Remove Sign in with Apple capability
+        script: |
+          # Remove from Runner.entitlements if it exists
+          if [ -f "ios/Runner/Runner.entitlements" ]; then
+            plutil -remove "com.apple.developer.applesignin" ios/Runner/Runner.entitlements 2>/dev/null || true
+            echo "Removed Sign in with Apple from entitlements"
+          fi
+          
+          # Remove from Xcode project
+          ruby -e "
+          require 'xcodeproj'
+          project = Xcodeproj::Project.open('ios/Runner.xcodeproj')
+          target = project.targets.first
+          target.build_configurations.each do |config|
+            config.build_settings.delete('com.apple.developer.applesignin')
+          end
+          project.save
+          puts 'Removed Sign in with Apple from Xcode project'
+          " 2>/dev/null || echo "Ruby cleanup skipped"
+      
       - name: Build IPA
         script: |
           keychain initialize
