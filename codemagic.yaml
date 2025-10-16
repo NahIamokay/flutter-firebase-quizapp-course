@@ -59,77 +59,47 @@ workflows:
           source: true
     
     scripts:
-      - name: Update Firebase versions for Xcode 15 compatibility
+      - name: Upgrade all dependencies to latest
         script: |
-          echo "📦 Updating Firebase to Xcode 15 compatible versions..."
-          
-          # Update to newer Firebase versions
-          sed -i '' 's/firebase_core: .*/firebase_core: ^2.24.0/' pubspec.yaml
-          sed -i '' 's/firebase_auth: .*/firebase_auth: ^4.16.0/' pubspec.yaml
-          sed -i '' 's/cloud_firestore: .*/cloud_firestore: ^4.14.0/' pubspec.yaml
-          sed -i '' 's/firebase_core_platform_interface: .*/firebase_core_platform_interface: ^5.0.0/' pubspec.yaml
-          sed -i '' 's/firebase_core_web: .*/firebase_core_web: ^2.10.0/' pubspec.yaml
-          sed -i '' 's/google_sign_in: .*/google_sign_in: ^6.2.0/' pubspec.yaml
-          
-          echo "✅ Updated Firebase versions in pubspec.yaml"
-      
-      - name: Get Flutter packages
-        script: |
-          flutter packages pub get
+          echo "📦 Upgrading all dependencies to latest compatible versions..."
+          flutter pub upgrade --major-versions
+          echo "✅ All dependencies upgraded automatically!"
       
       - name: Update Podfile iOS version
         script: |
           sed -i '' "s/^platform :ios, *'[0-9.]*'/platform :ios, '13.0'/" ios/Podfile
       
-      - name: Delete Podfile.lock and update CocoaPods repos
+      - name: Clean and install pods
         script: |
           cd ios
-          rm -f Podfile.lock
+          rm -rf Podfile.lock Pods ~/Library/Caches/CocoaPods
           pod repo update
+          pod install
           cd ..
       
-      - name: Install pods
+      - name: Remove Sign in with Apple capability
         script: |
-          find . -name "Podfile" -execdir pod install \;
-      
-      - name: Remove Sign in with Apple capability completely
-        script: |
-          echo "🔧 Removing Sign in with Apple capability..."
+          echo "🔧 Removing Sign in with Apple..."
           
           if [ -f "ios/Runner/Runner.entitlements" ]; then
             /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.applesignin" ios/Runner/Runner.entitlements 2>/dev/null || true
-            echo "✅ Removed from entitlements file"
           fi
           
           ruby << 'RUBY'
           require 'xcodeproj'
-          
-          project_path = 'ios/Runner.xcodeproj'
-          project = Xcodeproj::Project.open(project_path)
-          
+          project = Xcodeproj::Project.open('ios/Runner.xcodeproj')
           project.targets.each do |target|
             if target.name == 'Runner'
               target.build_configurations.each do |config|
-                if config.build_settings['CODE_SIGN_ENTITLEMENTS']
-                  config.build_settings.delete('CODE_SIGN_ENTITLEMENTS')
-                  puts "✅ Removed CODE_SIGN_ENTITLEMENTS from #{config.name}"
-                end
-              end
-              
-              entitlements_ref = project.files.find { |f| f.path.include?('entitlements') }
-              if entitlements_ref
-                entitlements_ref.remove_from_project
-                puts "✅ Removed entitlements file reference"
+                config.build_settings.delete('CODE_SIGN_ENTITLEMENTS')
               end
             end
           end
-          
           project.save
-          puts "✅ Successfully updated Xcode project"
           RUBY
           
           rm -f ios/Runner/Runner.entitlements
-          echo "✅ Sign in with Apple capability removed successfully!"
+          echo "✅ Removed Sign in with Apple!"
       
       - name: Build IPA
         script: |
@@ -146,7 +116,6 @@ workflows:
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
     
     publishing:
       email:
