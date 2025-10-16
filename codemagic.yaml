@@ -9,7 +9,6 @@ workflows:
         XCODE_VERSION: "15.0"
         FLUTTER_VERSION: "3.24.0"
         COCOAPODS_DISABLE_STATS: "true"
-        # Your app bundle ID
         BUNDLE_ID: "io.fireships.quizapps"
         APP_STORE_CONNECT_ISSUER_ID: "602ac213-1394-40fa-98e5-d13171c72476"
         APP_STORE_CONNECT_KEY_IDENTIFIER: "M6C3Y7VG76"
@@ -69,6 +68,13 @@ workflows:
         script: |
           flutter packages pub get
       
+      - name: Delete Podfile.lock and update CocoaPods repos
+        script: |
+          cd ios
+          rm -f Podfile.lock
+          pod repo update
+          cd ..
+      
       - name: Install pods
         script: |
           find . -name "Podfile" -execdir pod install \;
@@ -97,6 +103,4 @@ workflows:
         api_key: $APP_STORE_CONNECT_PRIVATE_KEY
         key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
         issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-        
-        # Upload to TestFlight only - you will add testers manually
         submit_to_testflight: false
