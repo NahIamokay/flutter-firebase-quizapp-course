@@ -1,0 +1,102 @@
+workflows:
+  ios-production:
+    name: iOS TESTQUIZ - Upload to TestFlight
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    
+    environment:
+      vars:
+        XCODE_VERSION: "15.0"
+        FLUTTER_VERSION: "3.24.0"
+        COCOAPODS_DISABLE_STATS: "true"
+        # Your app bundle ID
+        BUNDLE_ID: "io.fireships.quizapps"
+        APP_STORE_CONNECT_ISSUER_ID: "602ac213-1394-40fa-98e5-d13171c72476"
+        APP_STORE_CONNECT_KEY_IDENTIFIER: "M6C3Y7VG76"
+        APP_STORE_CONNECT_PRIVATE_KEY: |
+          -----BEGIN PRIVATE KEY-----
+          MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg+em9ls57IJ8pXpT8
+          LKAI8Qv9Yev7vmfmWId76/AEgp2gCgYIKoZIzj0DAQehRANCAATX3EEMR/YK4ftN
+          jwegtTmP5rhj26dK+7EyHQVRoqpzETlHc3dZ9N4JtCCABfNoAEFV0ibdkp3+GTKz
+          rny4/N9Q
+          -----END PRIVATE KEY-----
+        CERTIFICATE_PRIVATE_KEY: |
+          -----BEGIN RSA PRIVATE KEY-----
+          MIIEpAIBAAKCAQEArwr+qM0x4EujCFmXGLayFe6HSzgDJdW2UTQ5WwUZk4tz9hnl
+          MDv/wIG+Wl1oWTeKIs0woHWlJZP4XfcETrnZ5s3zHJJN0Bol1WbdTxgBEiAH5oLP
+          AAJAknnvf09ktimDmPeCmEU+/BJ0qeajxTsNndzCrvTfI/KLx2hDLp1uumNVgaT0
+          zjR03IqDszEj4wAFS1l+QRdoCtIMhoa1PBoNgUU9Dw4tB+ZGoCexp7wwtgo7kW7o
+          oP8bJLKyqv482Ue8jtBweSZRXhsVROJeUdkMxBMw3jx1YfayZyKniME36DvytgEM
+          0VuBqpR9n+onFtg4Vi5R0+UNSUTCLTZyq121LQIDAQABAoIBADCsrgPii2wDnGJG
+          B24n332ZxqVz/ewXcYtDKm/VCzesH6LfsIupI4U0juox70Jf31muFUeJb1Lzwqze
+          c6Qwqhc0TdY0GM81di/RWtkTo7iWj5vZ5BXsimgw4BhWy3qcMKvop7gQCWOu/iIA
+          sKm3siGjsb9U+HfWimf45jWgMZpCbt6z5eNIMzL1hUTUDf7RNtJowIBK3rL+P7fw
+          YSnmmTFjpVG9nX5feZF4DT6wyOPB03qLXlmQ1RekVMeAFrjoOb1HPRtQ9lypylRN
+          1JTjnzBiSxvvUDmcH9y413d4zMTqFrt81xSyrBOvir5b3HgAUrcW4nPb70C9B0by
+          MXTq/gECgYEA57LGYFRRYJi2Q0JxmUOnIJdUYs94c4M6Q8xcz17Ljl7bQCYX/Wth
+          1Yc1GP5ChKh3Q123w1NU53s8OPho/TSV3vHGFHy9quiRqGJv7iaGbPGPjoWXCeTD
+          jAR9STzFxeVyXWoQgaVoE2IXB5jIDN2DFzYRZPlmwmBUsmZ3sWtdgqUCgYEAwWb9
+          +1CO7ayrOuadkDN5Z3Y3oxIp3sISsF3JWT73skRln4895QxD0xQ0d/ow9/UmTzwM
+          NEr6ryj+R6KOh+OkV84GKvPlJJUAOXEN2KTNSQJd8CM7Y0W8WChPrS7ChZjUbsja
+          7kTDGMkdD8rOHYqD9BHRfz7CIEClVEWZxsTiCekCgYEAoiZ6MKYxwWF+hLm2WKWB
+          DAz8MJ6z1FttZk9aUIIuAPgfhthiB6ej81TJczFWChMATDQFS/xAujODpPcsOrAX
+          hsw7bNETx801StuBK/DoOMwhRIP3fSQNOitWJvASFPoLvJZi8Oh6Wr5WEan5rw9D
+          E/Zx2/Gy2aui+qs9bvwNmEUCgYBYU9xNKeaM/94YAXkWgZvBt8kDLel3dfUpHTw3
+          CT4A6aHr9HSVJjvXrBOmc9pndEvxxf/g5hmFY9h2CPTFdR76hvpkJY2SXoaCtXJY
+          bjPfUzhp0v1tgkzZileRRZjLgRgMHKl4Rmk/6aHfM4VdEoTfNEAUuCnapwua6Eqp
+          8AM3+QKBgQCwyPjaADu49cCzdL2THCTXGc8rN4Cx4B55+4cojdQP20lADKS2RaD+
+          jlh/RXYbSRsW0ykxSSWDFG2gYesbztbSMJLznmXugWEQipLGSduzRkx0Or4YPUGd
+          ercL2TV0DHnsnOyf0v0woEgJ7RYpdP4ueT+O++kw0LQBPdC0qYL9Tw==
+          -----END RSA PRIVATE KEY-----
+      xcode: 15.0
+      flutter: 3.24.0
+      cocoapods: default
+    
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'main'
+          include: true
+          source: true
+    
+    scripts:
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      
+      - name: Install pods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      
+      - name: Flutter build ipa for TESTQUIZ
+        script: |
+          flutter build ipa --release \
+            --build-name=1.0.$BUILD_NUMBER \
+            --build-number=$BUILD_NUMBER \
+            --export-options-plist=/Users/builder/export_options.plist
+    
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+    
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com
+        notify:
+          success: true
+          failure: true
+      
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        
+        # Upload to TestFlight only - you will add testers manually
+        submit_to_testflight: false
