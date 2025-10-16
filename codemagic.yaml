@@ -78,25 +78,53 @@ workflows:
         script: |
           find . -name "Podfile" -execdir pod install \;
       
-      - name: Remove Sign in with Apple capability
+      - name: Remove Sign in with Apple capability completely
         script: |
-          # Remove from Runner.entitlements if it exists
+          echo "🔧 Removing Sign in with Apple capability..."
+          
+          # Step 1: Remove from entitlements file using PlistBuddy
           if [ -f "ios/Runner/Runner.entitlements" ]; then
-            plutil -remove "com.apple.developer.applesignin" ios/Runner/Runner.entitlements 2>/dev/null || true
-            echo "Removed Sign in with Apple from entitlements"
+            /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.applesign" ios/Runner/Runner.entitlements 2>/dev/null || true
+            echo "✅ Removed from entitlements file"
           fi
           
-          # Remove from Xcode project
-          ruby -e "
+          # Step 2: Remove entitlements reference from Xcode project
+          ruby << 'RUBY'
           require 'xcodeproj'
-          project = Xcodeproj::Project.open('ios/Runner.xcodeproj')
-          target = project.targets.first
-          target.build_configurations.each do |config|
-            config.build_settings.delete('com.apple.developer.applesignin')
+          
+          project_path = 'ios/Runner.xcodeproj'
+          project = Xcodeproj::Project.open(project_path)
+          
+          project.targets.each do |target|
+            if target.name == 'Runner'
+              puts "Found Runner target, removing entitlements..."
+              
+              # Remove CODE_SIGN_ENTITLEMENTS from all configurations
+              target.build_configurations.each do |config|
+                if config.build_settings['CODE_SIGN_ENTITLEMENTS']
+                  config.build_settings.delete('CODE_SIGN_ENTITLEMENTS')
+                  puts "✅ Removed CODE_SIGN_ENTITLEMENTS from #{config.name}"
+                end
+              end
+              
+              # Remove entitlements file from project
+              entitlements_ref = project.files.find { |f| f.path.include?('entitlements') }
+              if entitlements_ref
+                entitlements_ref.remove_from_project
+                puts "✅ Removed entitlements file reference"
+              end
+            end
           end
+          
           project.save
-          puts 'Removed Sign in with Apple from Xcode project'
-          " 2>/dev/null || echo "Ruby cleanup skipped"
+          puts "✅ Successfully updated Xcode project"
+          RUBY
+          
+          # Step 3: Delete the entitlements file completely
+          rm -f ios/Runner/Runner.entitlements
+          echo "✅ Deleted entitlements file from filesystem"
+          
+          echo "✅ Sign in with Apple capability removed successfully!"
       
       - name: Build IPA
         script: |
